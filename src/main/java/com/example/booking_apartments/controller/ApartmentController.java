@@ -53,9 +53,16 @@ public class ApartmentController {
     @GetMapping(GET_APARTMENTS_BY_LOCATION)
     public List<ApartmentInfoDto> getApartmentByLocation(@RequestParam String latitude, @RequestParam String longitude) {
 
-        return null;
-
+        return apartmentService.getApartmentsByLocation(latitude, longitude);
     }
 
+    @GetMapping("/test")
+    public String getBookingApartment(@RequestHeader (required = false) String token,
+                                      @RequestParam (required = false) String startDate,
+                                      @RequestParam (required = false) String endDate,
+                                      @RequestParam Long id){
+
+        return apartmentService.bookingApartment(id);
+    }
 
 }

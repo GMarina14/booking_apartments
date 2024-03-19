@@ -1,12 +1,21 @@
 package com.example.booking_apartments.service.impl;
 
+import com.example.booking_apartments.model.entity.IntegrationInfoEntity;
 import com.example.booking_apartments.repository.IntegrationRepository;
 import com.example.booking_apartments.service.IntegrationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static com.example.booking_apartments.constant.BookingApplicationConstant.ID_GEO_CONSTANT;
 
 @Service
 @RequiredArgsConstructor
@@ -14,18 +23,54 @@ public class IntegrationServiceImpl implements IntegrationService {
 
     private final IntegrationRepository integrationRepository;
 
+    //private final RestTemplate restTemplate;
+
     @Override
-    public URL getGeocodedUrl(String latitude, String longitude) {
+    public String getCityByLocation(String latitude, String longitude) {
 
-        //?????? decode?
-        String key= "dfcb67fbb3b74d3b8c01dba2a3ecefe0";
+        String url = getGeocodedUrl(latitude, longitude);
+        RestTemplate restTemplate = new RestTemplate();
 
-        // Must be URL encoded ????
+        String infoByLocation = restTemplate.exchange(url,
+                HttpMethod.GET,
+                new HttpEntity<>(null, null),
+                String.class).getBody();
 
+        return getParseInfo(infoByLocation);
+
+    }
+
+    //
+    @Override
+    public String getPreparedDiscountForBooking(Long id) {
+
+        String url = "http://localhost:9098/test?id=%s";
+        RestTemplate restTemplate = new RestTemplate();
+
+       return restTemplate.exchange(String.format(url, id),
+                HttpMethod.GET,
+                new HttpEntity<>(null, null),
+                String.class).getBody();
+    }
+
+    private String getGeocodedUrl(String latitude, String longitude) {
+
+        IntegrationInfoEntity integrationInfo = integrationRepository.findById(ID_GEO_CONSTANT).get();
+
+        String url = String.format(integrationInfo.getPathValue(),
+                latitude,
+                longitude,
+                B64ServiceImpl.getDecode(integrationInfo.getKeyValue()));
+        return url;
+    }
+
+    private String getParseInfo(String value) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            URL url = new URL(String.format("https://api.opencagedata.com/geocode/v1/json?q=%s+%s&key=%s", latitude, longitude, key));
-            return url;
-        } catch (MalformedURLException e) {
+            JsonNode tree = objectMapper.readTree(value);
+            return tree.get("results").get(0).get("components").get("city").asText();
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

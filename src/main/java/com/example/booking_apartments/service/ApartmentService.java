@@ -15,4 +15,6 @@ public interface ApartmentService {
 
     String addPhotoOfApartment(Long id, MultipartFile image) throws IOException;
 
+    String bookingApartment(Long id);
+
 }

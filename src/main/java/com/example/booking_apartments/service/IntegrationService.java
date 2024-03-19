@@ -4,6 +4,8 @@ import java.net.URL;
 
 public interface IntegrationService {
 
-    URL getGeocodedUrl(String latitude, String longitude);
+    String getCityByLocation(String latitude, String longitude);
+
+    String getPreparedDiscountForBooking(Long id);
 
 }

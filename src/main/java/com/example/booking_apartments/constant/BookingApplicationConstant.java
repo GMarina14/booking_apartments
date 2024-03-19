@@ -32,6 +32,11 @@ public class BookingApplicationConstant {
     public final static String NON_VALID_TOKEN = "Non valid token";
     public final static String APARTMENT_PHOTOS_UPLOAD_SUCCESSFUL ="Apartment's photos are saved successfully";
 
+    /**
+     * Consts
+     */
+
+    public final static String ID_GEO_CONSTANT="GEO";
 
 
 

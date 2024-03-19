@@ -6,10 +6,15 @@ import com.example.booking_apartments.model.entity.UserRegistrationFormEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ApartmentRegistrationRepository extends JpaRepository<ApartmentEntity, Long> {
 
     ApartmentEntity findApartmentEntityByPropertyNameAndAddressEntity(String propertyName, AddressEntity addressEntity);
+
+
+
 
 
 }
