@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS table_one(id INT8  PRIMARY KEY NOT NULL ,one varchar(50),two varchar(100));
