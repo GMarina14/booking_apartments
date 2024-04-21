@@ -5,7 +5,7 @@ public class ServerConstants {
     /**
      * Path constants
      */
-    public final static String RESTART_DB = "http://localhost:8081/restart-db";
+    public final static String RESTART_DB = "/restart-db";
 
 
 
