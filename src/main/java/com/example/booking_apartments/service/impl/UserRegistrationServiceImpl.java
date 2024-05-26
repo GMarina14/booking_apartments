@@ -10,6 +10,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,12 +27,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     private final UserRegistrationMapper userRegistrationMapper;
 
     private final EntityManager entityManager;
+    private final static Logger log = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+
 
     @Override
     public String saveNewUser(UserRegistrationFormDto userRegistrationFormDto) {
 
         //  UserRegistrationFormEntity userByNickname = userRegistrationRepository.findUserByNickname(userRegistrationFormDto.getNickname());
-
+        log.info("UserRegistrationServiceImpl : saveNewUser -> ");
         UserRegistrationFormEntity userByNickname = findUserByNickNameWithCriteria(userRegistrationFormDto.getNickname());
 
         //userRegistrationRepository.findUserRegistrationFormEntityByNickname(userRegistrationFormDto.getNickname());
@@ -50,11 +54,14 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         UserRegistrationFormEntity userRegistrationForm = userRegistrationMapper.userFormDtoUserForm(userRegistrationFormDto);
         userRegistrationRepository.save(userRegistrationForm);
 
+        log.info("UserRegistrationServiceImpl : saveNewUser <- ");
         return USER_REGISTRATION_SUCCESSFUL;
     }
 
 
     private UserRegistrationFormEntity findUserByNickNameWithCriteria(String nickName) {
+
+        log.info("UserRegistrationServiceImpl : findUserByNickNameWithCriteria -> product_apartment");
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserRegistrationFormEntity> query = criteriaBuilder.createQuery(UserRegistrationFormEntity.class);
@@ -67,6 +74,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
             return null;
         }
 
+        log.info("UserRegistrationServiceImpl : findUserByNickNameWithCriteria <- product_apartment");
         return resultList.get(0);
     }
 

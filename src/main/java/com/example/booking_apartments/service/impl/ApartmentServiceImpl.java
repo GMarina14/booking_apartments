@@ -1,22 +1,24 @@
 package com.example.booking_apartments.service.impl;
 
+import com.example.booking_apartments.exception.ApartmentException;
 import com.example.booking_apartments.exception.ApartmentNotFoundException;
 import com.example.booking_apartments.mapper.AddressMapper;
 import com.example.booking_apartments.model.dto.ApartmentInfoDto;
-import com.example.booking_apartments.model.entity.AddressEntity;
-import com.example.booking_apartments.model.entity.ApartmentEntity;
-import com.example.booking_apartments.model.entity.FacilitiesEntity;
-import com.example.booking_apartments.model.entity.Image;
+import com.example.booking_apartments.model.entity.*;
 import com.example.booking_apartments.repository.AddressRegistrationRepository;
 import com.example.booking_apartments.repository.ApartmentRegistrationRepository;
 import com.example.booking_apartments.repository.FacilitiesRepository;
 import com.example.booking_apartments.service.ApartmentService;
+import com.example.booking_apartments.service.UserRegistrationService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,8 @@ public class ApartmentServiceImpl implements ApartmentService {
     private final AddressMapper addressMapper;
     private final ImageServiceImpl imageService;
     private final IntegrationServiceImpl integrationService;
+    private final UserRegistrationServiceImpl userRegistrationService;
+    private final BookingInfoServiceImpl bookingInfoService;
 
     @Override
     public String registrationOfNewApartment(ApartmentInfoDto apartmentInfoDto) {
@@ -67,9 +71,29 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
-    public String bookingApartment(Long id) {
+    @Transactional
+    public ApartmentInfoDto bookingApartment(Long id, UserRegistrationFormEntity user, LocalDateTime startDate, LocalDateTime endDate) {
 
-        return integrationService.getPreparedDiscountForBooking(id);
+
+        ApartmentEntity apartment = apartmentRegistrationRepository.findById(id).orElseThrow(() -> new ApartmentNotFoundException("apartment not found"));
+        getInfoAboutAvailability(apartment);
+
+        //todo создание сущности BookingInfoEntity (с данными пользователя бронирования). Сохранение сущности в бд. Забирать айди
+        bookingInfoService.createBookingReservation(startDate, endDate, apartment, user);
+
+
+
+        //
+       /* getDiscount()
+        try{
+            sendMassage()
+        }catch(){
+            // скидка будет выслана в течение 24 часов
+        }*/
+
+
+        return null;
+        //integrationService.getPreparedDiscountForBooking(id);
     }
 
     @Override
@@ -80,6 +104,18 @@ public class ApartmentServiceImpl implements ApartmentService {
         return addressEntitiesByCity.stream()
                 .map(a -> addressMapper.apartmentAndAddressToApartmentInfo(a, a.getApartmentEntity()))
                 .collect(Collectors.toList());
+    }
+
+    private void getInfoAboutAvailability(ApartmentEntity apartment) {
+
+        if (!apartment.isAvailability()) {
+            throw new ApartmentException("Apartment is not available");
+        }
+        //todo проверяем на даты бронирования
+
+        apartment.setAvailability(false);
+        apartmentRegistrationRepository.save(apartment);
+
     }
 
 

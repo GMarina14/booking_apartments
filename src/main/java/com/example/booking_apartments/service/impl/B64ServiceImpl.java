@@ -1,8 +1,15 @@
 package com.example.booking_apartments.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Base64;
 
+@RequiredArgsConstructor
 public class B64ServiceImpl {
+
+    private Logger log = LoggerFactory.getLogger(B64ServiceImpl.class);
 
     public static String getEncode(String str) {
 

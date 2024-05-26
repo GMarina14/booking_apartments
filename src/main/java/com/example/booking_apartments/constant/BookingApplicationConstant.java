@@ -13,6 +13,7 @@ public class BookingApplicationConstant {
     public final static String GET_APARTMENT_BY_ID = APARTMENT + "/by-id/{id}";
     public final static String GET_APARTMENTS_BY_LOCATION = APARTMENT+"/by-location";
     public final static String ADD_IMAGE_OF_APARTMENT = APARTMENT+"/add-photo";
+    public final static String GET_BOOKING = BASE_URL+"/get-booking";
 
 
 

@@ -15,7 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.db_booking.constant.DbConstants.*;
+import static com.example.db_booking.constant.DbConstants.TABLE_CREATED;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +86,7 @@ public class CreateTableServiceServiceImpl implements CreateTableService {
         String version = getScriptVersion();
 
         String fileName= String.format(stringBuilder.toString(), version, tableName);
+       
 
         return fileName;
     }

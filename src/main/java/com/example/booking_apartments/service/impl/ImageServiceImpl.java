@@ -20,7 +20,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image saveToDb(MultipartFile multipartFile) throws IOException {
-        log.info("ImageServiceImpl : ->saveToDb");
+        log.info("IntegrationServiceImpl : ImageServiceImpl -> saveToDb");
 
         Image image = new Image();
         try {
@@ -29,17 +29,17 @@ public class ImageServiceImpl implements ImageService {
             log.error("ImageServiceImpl: saveToDb: 'multipartFile' IOException");
         }
 
-        log.info("ImageServiceImpl : <- saveToDo");
+        log.info("IntegrationServiceImpl : ImageServiceImpl <- saveToDo");
         return imageRepository.save(image);
     }
 
     @Override
     public byte[] getById(Long id) {
-        log.info("ImageServiceImpl : ->getById");
+        log.info("IntegrationServiceImpl : ImageServiceImpl ->getById");
 
         Image imageById = imageRepository.findImageById(id);
 
-        log.info("ImageServiceImpl : <- getById");
+        log.info("IntegrationServiceImpl : ImageServiceImpl <- getById");
         return imageById.getImage();
     }
 

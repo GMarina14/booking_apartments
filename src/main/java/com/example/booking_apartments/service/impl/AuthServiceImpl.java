@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public AuthResponseDto authTheUser(AuthFormDto authForm)  {
+    public AuthResponseDto authTheUser(AuthFormDto authForm) {
 
         UserRegistrationFormEntity userByUsername = userRegistrationRepository.findUserRegistrationFormEntityByUsername(authForm.getUsername());
         if (isNull(userByUsername)) {
@@ -39,16 +39,24 @@ public class AuthServiceImpl implements AuthService {
         userByUsername.setToken(B64ServiceImpl.getEncode(token));
         userRegistrationRepository.save(userByUsername);
 
-        return new AuthResponseDto(USER_AUTHORISATION_SUCCESSFUL,token);
+        return new AuthResponseDto(USER_AUTHORISATION_SUCCESSFUL, token);
     }
 
     @Override
     public void checkValidToken(String token) {
-        UserRegistrationFormEntity user = authRepository.findUserRegistrationFormEntitiesByToken(B64ServiceImpl.getEncode(token));
-        if(isNull(user)){
+        UserRegistrationFormEntity user = getUserByToken(token);
+        if (isNull(user)) {
             throw new RuntimeException(NON_VALID_TOKEN);
         }
+    }
 
+    public UserRegistrationFormEntity checkValidTokenWithResult(String token) {
+        checkValidToken(token);
+        return getUserByToken(token);
+    }
+
+    private UserRegistrationFormEntity getUserByToken(String token) {
+        return authRepository.findUserRegistrationFormEntitiesByToken(B64ServiceImpl.getEncode(token));
     }
 
     private String generateSessionToken() {

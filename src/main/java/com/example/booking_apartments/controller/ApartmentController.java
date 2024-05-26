@@ -1,6 +1,7 @@
 package com.example.booking_apartments.controller;
 
 import com.example.booking_apartments.model.dto.ApartmentInfoDto;
+import com.example.booking_apartments.model.entity.UserRegistrationFormEntity;
 import com.example.booking_apartments.service.ApartmentService;
 import com.example.booking_apartments.service.AuthService;
 import com.example.booking_apartments.service.UserRegistrationService;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.booking_apartments.constant.BookingApplicationConstant.*;
+import static java.util.Objects.isNull;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,13 +59,18 @@ public class ApartmentController {
         return apartmentService.getApartmentsByLocation(latitude, longitude);
     }
 
-    @GetMapping("/test")
-    public String getBookingApartment(@RequestHeader (required = false) String token,
-                                      @RequestParam (required = false) String startDate,
-                                      @RequestParam (required = false) String endDate,
-                                      @RequestParam Long id){
+    @GetMapping(GET_BOOKING)
+    public ApartmentInfoDto getBookingApartment(@RequestHeader(required = false) String token,
+                                                      @RequestParam(required = false) LocalDateTime startDate,
+                                                      @RequestParam(required = false) LocalDateTime endDate,
+                                                      @RequestParam Long id) {
 
-        return apartmentService.bookingApartment(id);
+        if (!isNull(startDate) && !isNull(endDate)) {
+            UserRegistrationFormEntity  user = authService.checkValidTokenWithResult(token);
+            return apartmentService.bookingApartment(id, user, startDate, endDate);
+        }
+
+        return null;
     }
 
 }
