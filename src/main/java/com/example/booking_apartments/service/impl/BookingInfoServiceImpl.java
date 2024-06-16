@@ -34,6 +34,7 @@ public class BookingInfoServiceImpl implements BookingInfoService {
 
         bookingInfoRepository.save(bookingInfo);
 // transfer to product module
+
         ProductInfoEntity discount = productService.getDiscount(bookingInfo);
 
         bookingInfo.setDiscount(discount);
