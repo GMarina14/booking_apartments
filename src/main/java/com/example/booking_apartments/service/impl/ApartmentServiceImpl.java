@@ -9,20 +9,19 @@ import com.example.booking_apartments.repository.AddressRegistrationRepository;
 import com.example.booking_apartments.repository.ApartmentRegistrationRepository;
 import com.example.booking_apartments.repository.FacilitiesRepository;
 import com.example.booking_apartments.service.ApartmentService;
-import com.example.booking_apartments.service.UserRegistrationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.booking_apartments.constant.BookingApplicationConstant.*;
+import static com.example.booking_apartments.exception.ApartmentException.NOT_FOUND_MESSAGE;
 import static java.util.Objects.isNull;
 
 
@@ -38,6 +37,10 @@ public class ApartmentServiceImpl implements ApartmentService {
     private final IntegrationServiceImpl integrationService;
     private final UserRegistrationServiceImpl userRegistrationService;
     private final BookingInfoServiceImpl bookingInfoService;
+    private final KafkaTemplate<String, String> template;
+
+    private final String TOPIC_POST_PROCESSING = "topic_post_processing";
+
 
     @Override
     public String registrationOfNewApartment(ApartmentInfoDto apartmentInfoDto) {
@@ -78,9 +81,15 @@ public class ApartmentServiceImpl implements ApartmentService {
         ApartmentEntity apartment = apartmentRegistrationRepository.findById(id).orElseThrow(() -> new ApartmentNotFoundException("apartment not found"));
         getInfoAboutAvailability(apartment);
 
-        //todo создание сущности BookingInfoEntity (с данными пользователя бронирования). Сохранение сущности в бд. Забирать айди
-        bookingInfoService.createBookingReservation(startDate, endDate, apartment, user);
+        BookingInfoEntity reservation = bookingInfoService.createBookingReservation(startDate, endDate, apartment, user);
 
+        try {
+            integrationService.getPreparedDiscountForBooking(reservation.getId(), user.getToken());
+        } catch (Exception e) {
+
+            template.send(TOPIC_POST_PROCESSING, reservation.getId().toString());
+            throw new ApartmentException("Your discount info of the booked apartment by location " + apartment.getAddressEntity().getStreetNumber() + " will be send to your email within 24 hours");
+        }
 
 
         //
@@ -92,8 +101,15 @@ public class ApartmentServiceImpl implements ApartmentService {
         }*/
 
 
-        return null;
+        return addressMapper.apartmentAndAddressToApartmentInfo(apartment.getAddressEntity(), apartment);
         //integrationService.getPreparedDiscountForBooking(id);
+    }
+
+    @Override
+    public ApartmentInfoDto showApartment(Long id) {
+
+        ApartmentEntity apartment = apartmentRegistrationRepository.findById(id).orElseThrow(() -> new ApartmentException(NOT_FOUND_MESSAGE));
+        return addressMapper.apartmentAndAddressToApartmentInfo(apartment.getAddressEntity(), apartment);
     }
 
     @Override
@@ -117,6 +133,4 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartmentRegistrationRepository.save(apartment);
 
     }
-
-
 }
