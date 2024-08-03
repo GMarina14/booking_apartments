@@ -1,14 +1,13 @@
 package com.example.booking_apartments.mapper;
 
 import com.example.booking_apartments.model.dto.ApartmentInfoDto;
-import com.example.booking_apartments.model.entity.AddressEntity;
-import com.example.booking_apartments.model.entity.ApartmentEntity;
-import com.example.booking_apartments.model.entity.FacilitiesEntity;
-import com.example.booking_apartments.model.entity.Image;
+import com.example.booking_apartments.model.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 import org.mapstruct.Mapping;
+
+import java.time.LocalDateTime;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AddressMapper {
@@ -29,6 +28,10 @@ public interface AddressMapper {
 
         return apartmentEntity;
     }
+
+
+    @Mapping(target = "id", ignore = true)
+    BookingInfoEntity prepareBookingInfoEntity(LocalDateTime startDate, LocalDateTime endDate, ApartmentEntity apartment, UserRegistrationFormEntity user);
 
 
     // OK?

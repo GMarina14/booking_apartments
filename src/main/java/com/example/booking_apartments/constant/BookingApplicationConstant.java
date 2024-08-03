@@ -14,6 +14,7 @@ public class BookingApplicationConstant {
     public final static String GET_APARTMENTS_BY_LOCATION = APARTMENT+"/by-location";
     public final static String ADD_IMAGE_OF_APARTMENT = APARTMENT+"/add-photo";
     public final static String GET_BOOKING = BASE_URL+"/get-booking";
+    public final static String  CREATE_REPORT = BASE_URL+"/create-report";
 
 
 
@@ -38,6 +39,10 @@ public class BookingApplicationConstant {
      */
 
     public final static String ID_GEO_CONSTANT="GEO";
+    public final static String ID_PRODUCT_DISCOUNT ="DISCOUNT";
+
+
+
 
 
 

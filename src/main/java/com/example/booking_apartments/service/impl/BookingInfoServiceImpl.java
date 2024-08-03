@@ -1,13 +1,14 @@
 package com.example.booking_apartments.service.impl;
 
 import com.example.booking_apartments.exception.ApartmentException;
+import com.example.booking_apartments.mapper.AddressMapper;
 import com.example.booking_apartments.model.entity.ApartmentEntity;
 import com.example.booking_apartments.model.entity.BookingInfoEntity;
-import com.example.booking_apartments.model.entity.ProductInfoEntity;
 import com.example.booking_apartments.model.entity.UserRegistrationFormEntity;
 import com.example.booking_apartments.repository.BookingInfoRepository;
 import com.example.booking_apartments.service.BookingInfoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,33 +19,34 @@ import java.util.List;
 public class BookingInfoServiceImpl implements BookingInfoService {
 
     private final BookingInfoRepository bookingInfoRepository;
-    private final ProductServiceImpl productService;
+    private final AddressMapper addressMapper;
 
+    /**
+     * the method checks if the needed apartment is available and if so, creates  a booking reservation
+     *
+     * @param startDate
+     * @param endDate
+     * @param apartment
+     * @param user
+     * @return
+     */
     @Override
     public BookingInfoEntity createBookingReservation(LocalDateTime startDate, LocalDateTime endDate, ApartmentEntity apartment, UserRegistrationFormEntity user) {
 
         checkAvailability(apartment, startDate, endDate);
-        BookingInfoEntity bookingInfo = new BookingInfoEntity();
-
-
-        bookingInfo.setStartDate(startDate);
-        bookingInfo.setEndDate(endDate);
-        bookingInfo.setApartment(apartment);
-        bookingInfo.setUser(user);
-
-        bookingInfoRepository.save(bookingInfo);
-// transfer to product module
-
-        ProductInfoEntity discount = productService.getDiscount(bookingInfo);
-
-        bookingInfo.setDiscount(discount);
-        bookingInfo.setPrice(apartment.getPrice() * (1.0 - discount.getDiscount() / 100));
-
+        BookingInfoEntity bookingInfo = addressMapper.prepareBookingInfoEntity(startDate, endDate, apartment, user);
         bookingInfoRepository.save(bookingInfo);
 
         return bookingInfo;
     }
 
+    /**
+     * the method checks if the needed apartment is available for reservation on the specified dates
+     *
+     * @param apartment
+     * @param startDate
+     * @param endDate
+     */
     private void checkAvailability(ApartmentEntity apartment, LocalDateTime startDate, LocalDateTime endDate) {
         List<BookingInfoEntity> bookingInfoEntitiesByApartment = bookingInfoRepository.findBookingInfoEntitiesByApartment(apartment);
 
@@ -58,6 +60,4 @@ public class BookingInfoServiceImpl implements BookingInfoService {
             }
         }
     }
-
-
 }
