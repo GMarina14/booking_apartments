@@ -30,7 +30,6 @@ public class StatisticAspect {
 
             log.info("Getting statistics for showApartment method");
 
-            AtomicInteger
         }
         // if... for others
 
