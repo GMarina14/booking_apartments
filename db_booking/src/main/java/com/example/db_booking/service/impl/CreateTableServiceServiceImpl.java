@@ -72,11 +72,14 @@ public class CreateTableServiceServiceImpl implements CreateTableService {
 
     private String getScriptVersion() {
 
-        String query = "select version from flyway_schema_history;";
-        List<String> list = jdbcTemplate.queryForList(query, String.class);
-        int x = list.stream().map(e -> Integer.parseInt(e)).sorted().max(Comparator.comparing(Integer::intValue)).orElse(0);
-        x++;
-        return Integer.toString(x);
+        //String query = "select version from flyway_schema_history;";
+
+        String query = "select version from flyway_schema_history f order by f.version desc limit 1;";
+        Integer finalScript = jdbcTemplate.queryForObject(query, Integer.class);
+        //  List<String> list = jdbcTemplate.queryForList(query, String.class);
+       //  int x = list.stream().map(e -> Integer.parseInt(e)).sorted().max(Comparator.comparing(Integer::intValue)).orElse(0);
+        // x++;
+      return finalScript.toString();
     }
 
     private String getFileName(String tableName) {

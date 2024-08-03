@@ -6,6 +6,6 @@ public interface IntegrationService {
 
     String getCityByLocation(String latitude, String longitude);
 
-    String getPreparedDiscountForBooking(Long id);
+    void getPreparedDiscountForBooking(Long id, String token);
 
 }

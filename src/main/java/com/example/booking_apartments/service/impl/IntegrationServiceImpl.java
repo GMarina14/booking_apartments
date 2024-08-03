@@ -11,14 +11,18 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.booking_apartments.constant.BookingApplicationConstant.ID_GEO_CONSTANT;
+import static com.example.booking_apartments.constant.BookingApplicationConstant.ID_PRODUCT_DISCOUNT;
 
 @Service
 @RequiredArgsConstructor
@@ -37,10 +41,10 @@ public class IntegrationServiceImpl implements IntegrationService {
         String url = getGeocodedUrl(latitude, longitude);
 
         log.info("IntegrationServiceImpl : getCityByLocation -> ");
-    // String   infoByLocation = geoCoderManagerService.requestToGeo(url);
+        // String   infoByLocation = geoCoderManagerService.requestToGeo(url);
         String infoByLocation;
         try {
-          infoByLocation = geoCoderManagerService.requestToGeo(url);
+            infoByLocation = geoCoderManagerService.requestToGeo(url);
         } catch (Exception e) {
             throw new RuntimeException("geo coder failed");
         }
@@ -49,21 +53,32 @@ public class IntegrationServiceImpl implements IntegrationService {
         return getParseInfo(infoByLocation);
     }
 
-    //
-    @Override
-    public String getPreparedDiscountForBooking(Long id) {
 
-        String url = "http://localhost:9098/test?id=%s";
-        RestTemplate restTemplate = new RestTemplate();
+    @Override
+    public void getPreparedDiscountForBooking(Long id, String token) {
+
+        IntegrationInfoEntity integrationInfo = integrationRepository.findById(ID_PRODUCT_DISCOUNT).get();
 
         log.info("IntegrationServiceImpl : getPreparedDiscountForBooking -> product_apartment");
-        String body = restTemplate.exchange(String.format(url, id),
-                HttpMethod.GET,
-                new HttpEntity<>(null, null),
-                String.class).getBody();
-        log.info("IntegrationServiceImpl : getPreparedDiscountForBooking <- product_apartment");
-        return body;
+        String url = integrationInfo.getPathValue();
 
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.exchange(
+                String.format(url, id),
+                HttpMethod.GET,
+                new HttpEntity<>(createHeadersWithToken(B64ServiceImpl.getDecode(integrationInfo.getKeyValue()))), //should we decode? if table contains the encoded
+                Void.class
+        );
+        log.info("IntegrationServiceImpl : getPreparedDiscountForBooking <- product_apartment");
+    }
+
+    private HttpHeaders createHeadersWithToken(String token) {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(token, "123");
+        HttpHeaders head = new HttpHeaders();
+        head.setAll(headers);
+        return head;
     }
 
     private String getGeocodedUrl(String latitude, String longitude) {

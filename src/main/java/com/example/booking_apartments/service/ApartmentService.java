@@ -19,4 +19,5 @@ public interface ApartmentService {
 
     ApartmentInfoDto  bookingApartment(Long id, UserRegistrationFormEntity user, LocalDateTime startDate, LocalDateTime endDate);
 
+    ApartmentInfoDto showApartment(Long id);
 }
