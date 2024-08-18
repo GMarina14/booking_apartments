@@ -13,7 +13,7 @@ public class JavaMailConfig {
     @Value("${product.mail.host}")
     public final static String HOST = "smtp.yandex.ru";
     public final static String USER_NAME = "marvin1429@yandex.ru";
-    public final static String PASSWORD = "pcfddfvigupqyndg";
+    public final static String PASSWORD = "bczdlwaztlhhsfxs";
 
     @Value("${product.mail.port}")
     private int PORT;

@@ -18,4 +18,10 @@ public class bookingExceptionHandler {
 
         return ResponseEntity.badRequest().body(e.getMessage());
     }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<?> catchException(UserException e){
+
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
 }

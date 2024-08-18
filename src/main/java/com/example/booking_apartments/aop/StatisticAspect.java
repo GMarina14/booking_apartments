@@ -7,8 +7,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Component
 @Aspect
 @Slf4j
@@ -20,7 +18,7 @@ public class StatisticAspect {
 
 
    // @AfterReturning(pointcut = POINT_CUT, returning = "result")
-    @AfterReturning(value = "execution(* com.example.booking_apartments.service.impl.ApartmentServiceImpl.*ApartmentInfoDto(..))", returning = "result")
+    @AfterReturning(value = "execution(* com.example.booking_apartments.service.impl.ApartmentServiceImpl.showApartment(..))", returning = "result")
     public void getStatisticByRequest(JoinPoint aspect, Object result) {
 
         String nameOfTheMethod = aspect.getSignature().getName();

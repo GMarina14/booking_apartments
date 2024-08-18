@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  statistic-db:
+    image: mongo
+    restart: always
+    environment:
+      - MONGODB_USER=
+      - MONGODB_PASSWORD=
+      - MONGODB_DATABASE=mongodb
+    volumes:
+      - db:/data/db
+    ports:
+      - "27018:27017"
+
+volumes:
+  db:

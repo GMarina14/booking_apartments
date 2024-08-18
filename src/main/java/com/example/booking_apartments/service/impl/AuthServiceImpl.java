@@ -1,5 +1,6 @@
 package com.example.booking_apartments.service.impl;
 
+import com.example.booking_apartments.exception.UserException;
 import com.example.booking_apartments.model.dto.AuthFormDto;
 import com.example.booking_apartments.model.dto.AuthResponseDto;
 import com.example.booking_apartments.model.entity.UserRegistrationFormEntity;
@@ -28,10 +29,10 @@ public class AuthServiceImpl implements AuthService {
 
         UserRegistrationFormEntity userByUsername = userRegistrationRepository.findUserRegistrationFormEntityByUsername(authForm.getUsername());
         if (isNull(userByUsername)) {
-            throw new RuntimeException(USER_DOESNT_EXIST);
+            throw new UserException(USER_DOESNT_EXIST);
         }
         if (!userByUsername.getPassword().equals(authForm.getPassword())) {
-            throw new RuntimeException(PASSWORD_INCORRECT);
+            throw new UserException(PASSWORD_INCORRECT);
         }
 
         String token = generateSessionToken();
@@ -46,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
     public void checkValidToken(String token) {
         UserRegistrationFormEntity user = getUserByToken(token);
         if (isNull(user)) {
-            throw new RuntimeException(NON_VALID_TOKEN);
+            throw new UserException(NON_VALID_TOKEN);
         }
     }
 

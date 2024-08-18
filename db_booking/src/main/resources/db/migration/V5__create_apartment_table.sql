@@ -17,3 +17,6 @@ create TABLE IF NOT EXISTS apartment(
 
 insert into apartment (id,property_name, available,price,payment_options,rooms_quantity, occupancy, room_type, free_cancellation_days, address_entity_id, facilities_entity_id, image_id)
 values (1, 'property', true, 14500.0, 2, 2, 2,'APARTMENT', 10, 1,1,1);
+
+
+
