@@ -62,4 +62,7 @@ public class ApartmentEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
+
+   /* @OneToOne(mappedBy = "StatisticInfo")
+    private StatisticInfo statisticInfo;*/
 }

@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -61,4 +63,6 @@ public class ApartmentEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
+
+
 }
